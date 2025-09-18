@@ -95,13 +95,13 @@ function Footer() {
               <li className="mb-2"><Link to="/careers" className="text-dark text-decoration-none hover-opacity">Careers</Link></li>
               <li className="mb-2"><Link to="/employees" className="text-dark text-decoration-none hover-opacity">Employees</Link></li>
               <li className="mb-2"><Link to="/login" className="text-dark text-decoration-none hover-opacity">Login</Link></li>
-              <li className="mb-2"><Link to="/track-shipments" className="text-dark text-decoration-none hover-opacity">Track Shipments</Link></li>
+              {/* <li className="mb-2"><Link to="/track-shipments" className="text-dark text-decoration-none hover-opacity">Track Shipments</Link></li> */}
             </ul>
           </div>
 
           {/* Contact + Social */}
           <div className="col-md-4 mb-4">
-            <h5 className="mb-3">Contact ATECH</h5>
+            <h5 className="mb-3">Contact Mark8 Logistics</h5>
             <p><strong>Phone:</strong> 707-526-1910</p>
             <p><strong>Email:</strong> info@mark8logistics.com</p>
             <h6>Corporate Office</h6>

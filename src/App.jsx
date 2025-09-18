@@ -12,6 +12,15 @@ import Consulting from "./pages/LandingPage/Consulting.jsx";
 import Support from "./pages/LandingPage/Support.jsx";
 import ApplyForm from "./pages/LandingPage/ApplyForm.jsx";
 
+// Quick Links
+import Employees from "./pages/LandingPage/Employees.jsx";
+import Tracking from "./pages/LandingPage/Tracking.jsx"
+
+
+import Warehousing from "./pages/LandingPage/Warehousing.jsx";
+import Transportation from "./pages/LandingPage/Transportation.jsx"
+
+
 // Auth Page
 import LoginPage from "./pages/auth/LoginPage.jsx";
 
@@ -35,7 +44,7 @@ import AssignRoute from "./pages/Admin/AssignRoute.jsx";
 import WarehouseDashboard from "./pages/WarehouseManager/WarehouseDashboard.jsx";
 import Inventory from "./pages/WarehouseManager/Inventory.jsx";
 import Orders from "./pages/WarehouseManager/Orders.jsx";
-import Settings from "./pages/WarehouseManager/Settings.jsx";
+
 
 // Delivery Staff Pages
 import DeliveryDashboard from "./pages/DeliveryStaff/DeliveryDashboard.jsx";
@@ -98,7 +107,7 @@ function App() {
           <Route path="/warehouse-dashboard" element={<WarehouseDashboard />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/settings" element={<Settings />} />
+          
           <Route path="/assign-driver" element={<AssignDriver />} />
 
           {/* Delivery Staff Routes */}
@@ -106,7 +115,7 @@ function App() {
           <Route index element={<DeliveryDashboard />} />
           <Route path="assigned" element={<AssignedShipments />} />
           <Route path="update" element={<UpdateShipmentStatus />} />
-          <Route path="route" element={<div>Map Integration Page</div>} />
+          
         </Route>
 
           {/* User Routes */}
@@ -116,6 +125,13 @@ function App() {
           <Route path="/myshipments" element={<MyShipments />} />
           <Route path="/track" element={<TrackShipment />} />
           <Route path="/history" element={<ShipmentHistory />} />
+
+           {/* quik links*/}
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/tracking" element={<Tracking />} />
+          <Route path="/transportation" element={<Transportation />} />
+          <Route path="/warehousing" element={<Warehousing />} />
+
         
 
         {/* Default Route */}

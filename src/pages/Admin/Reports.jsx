@@ -80,12 +80,12 @@ const Reports = () => {
             )}
           </div>
 
-          {/* Future: Graphs/Analytics */}
+          {/* Future: Graphs/Analytics
           <div className="card shadow-sm mb-5">
             <div className="card-body text-muted">
               📈 <em>Analytics graphs will be added in the future.</em>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

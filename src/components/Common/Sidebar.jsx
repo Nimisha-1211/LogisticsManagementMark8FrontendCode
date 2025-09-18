@@ -35,7 +35,7 @@ const Sidebar = () => {
         <li><a href="/shipments">Shipments</a></li>
         <li><a href="/tracking">Tracking</a></li>
         <li><a href="/reports">Reports</a></li>
-        <li><a href="/settings">Settings</a></li>
+        {/* <li><a href="/settings">Settings</a></li> */}
         <li><a href="/logout">Logout</a></li>
       </ul>
     </div>

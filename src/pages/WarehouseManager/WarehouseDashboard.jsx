@@ -46,7 +46,7 @@ function WarehouseDashboard() {
           <li><Link to="/inventory">Inventory</Link></li>
           <li><Link to="/orders">Orders</Link></li>
           <li><Link to="/assign-driver">Assign Driver</Link></li>
-          <li><Link to="/settings">Settings</Link></li>
+          {/* <li><Link to="/settings">Settings</Link></li> */}
           <li><Link to="/logout" className="logout-link">Logout</Link></li>
         </ul>
       </div>

@@ -19,9 +19,7 @@ function DeliveryLayout() {
           <li className="nav-item mb-2">
             <Link to="/delivery/update" className="nav-link text-white">✏️ Update Shipment</Link>
           </li>
-          <li className="nav-item mb-2">
-            <Link to="/delivery/route" className="nav-link text-white">🗺 Delivery Route</Link>
-          </li>
+          
           <li className="nav-item mt-4">
             <button className="btn btn-danger w-100"><Link to="/">🚪 Logout</Link></button>
           </li>

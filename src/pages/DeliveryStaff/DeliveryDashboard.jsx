@@ -65,7 +65,6 @@ function DeliveryDashboard() {
             <thead className="table-dark">
               <tr>
                 <th>Order ID</th>
-                <th>Product</th>
                 <th>Quantity</th>
                 <th>Destination</th>
                 <th>Status</th>
@@ -77,8 +76,7 @@ function DeliveryDashboard() {
               {shipments.length > 0 ? (
                 shipments.map((s) => (
                   <tr key={s._id}>
-                    <td>#{s.orderId}</td>
-                    <td>{s.product?.name || "N/A"}</td>
+                    <td>#{s._id}</td>
                     <td>{s.quantity}</td>
                     <td>{s.deliveryAddress?.address || "N/A"}</td>
                     <td>{s.status}</td>
@@ -147,9 +145,3 @@ export default DeliveryDashboard;
 
 
 
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/manikanta9391/completeFinal.git
-git push -u origin main

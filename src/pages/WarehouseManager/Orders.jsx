@@ -1,268 +1,159 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../../styles/admin/Orders.css";
+import { toast } from "react-toastify"; // ✅ for success/error notifications
 
-const Orders = () => {
-  const [orders, setOrders] = useState([]);
-  const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("All");
-  const [editingId, setEditingId] = useState(null);
+function DeliveryDashboard() {
   const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]); // ✅ renamed shipments → orders
+  const [notifications, setNotifications] = useState([]);
 
-  // ✅ Fetch orders from backend
+  const driverId = "68c95c5cda61dd72a6f3961b"; // mock driver id
+
+  // ✅ Fetch driver orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch("http://localhost:3000/orders/order", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!res.ok) throw new Error("Failed to fetch orders");
+        const res = await fetch(
+          `http://localhost:3000/driver/driver/orders/${driverId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch driver orders");
+
         const data = await res.json();
+        console.log("Driver Orders API response:", data);
+
         setOrders(data);
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-        toast.error("Failed to load orders!");
+
+        // ✅ Notifications setup (example: from orders list)
+        const notes = data.map(
+          (o) =>
+            `Order #${o._id} is currently ${o.status || "Pending"}`
+        );
+        setNotifications(notes);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to fetch driver orders");
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [driverId]);
 
-  // ✅ Start editing
-  const handleEdit = (id) => setEditingId(id);
-
-  // ✅ Save changes (update order in backend)
-  const handleSave = async (id) => {
-    const order = orders.find((o) => o._id === id);
-    if (!order) return;
-
+  // ✅ Update order status
+  const handleStatusChange = async (id, newStatus) => {
     try {
+      const order = orders.find((o) => o._id === id);
+
       const res = await fetch("http://localhost:3000/orders/order", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: order._id, // custom orderId (not _id)
-          driverId: order.assignDriver?._id || null, // assign driver Mongo _id
-          status: order.status,
+          orderId: order._id, // custom orderId
+          driverId: order.assignDriver?._id || driverId, // fallback to current driver
+          status: newStatus,
         }),
       });
 
       if (!res.ok) throw new Error("Failed to update order");
       const data = await res.json();
 
-      // ✅ update order in UI
+      // ✅ update UI
       setOrders((prev) =>
         prev.map((o) => (o._id === id ? { ...o, ...data.order } : o))
       );
 
-      toast.success("Order Updated!");
-      setEditingId(null);
+      toast.success("Order updated!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to update order!");
     }
   };
 
-  // ✅ Cancel editing
-  const handleCancel = () => setEditingId(null);
-
-  // ✅ Update order locally (before saving)
-  const handleChange = (id, field, value) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order._id === id ? { ...order, [field]: value } : order
-      )
-    );
-  };
-
-  // ✅ Delete order
-  const handleDelete = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:3000/orders/order/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete order");
-
-      setOrders((prev) => prev.filter((o) => o._id !== id));
-      toast.success("Order Deleted!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete order!");
-    }
-  };
-
-  // ✅ Filters
-  const filteredOrders = orders.filter((o) =>
-    activeTab === "All" ? true : o.orderType === activeTab
-  );
-
-  const displayedOrders = filteredOrders.filter((o) =>
-    (o.product?.productName || "N/A")
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  // ✅ Counts
-  const total = orders.length;
-  const pending = orders.filter((o) => o.status === "Pending").length;
-  const delivered = orders.filter((o) => o.status === "Delivered").length;
-  const cancelled = orders.filter((o) => o.status === "Cancelled").length;
-
-  if (loading) return <div>Loading Orders...</div>;
+  if (loading) return <p className="text-center">Loading assigned orders...</p>;
 
   return (
-    <div className="orders-container">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h4>Warehouse Manager</h4>
-        <ul>
-          <li>
-            <Link to="/warehouse-dashboard">Dashboard</Link>
-          </li>
-          <li>
-            <Link to="/inventory">Inventory</Link>
-          </li>
-          <li>
-            <Link to="/orders">Orders</Link>
-          </li>
-          <li>
-            <Link to="/assign-driver">Assign Driver</Link>
-          </li>
-          <li>
-            <Link to="/settings">Settings</Link>
-          </li>
-          <li>
-            <Link to="/logout" className="logout-link">
-              Logout
-            </Link>
-          </li>
-        </ul>
-      </div>
+    <div className="container mt-4">
+      <h2 className="mb-4 text-center">🚚 Delivery Staff Dashboard</h2>
 
-      {/* Main content */}
-      <div className="orders-main">
-        <h2>Orders</h2>
-
-        {/* Summary Cards */}
-        <div className="cards">
-          <div className="card total">Total Orders: {total}</div>
-          <div className="card pending">Pending: {pending}</div>
-          <div className="card completed">Delivered: {delivered}</div>
-          <div className="card cancelled">Cancelled: {cancelled}</div>
+      {/* Assigned Orders */}
+      <div className="card shadow mb-4">
+        <div className="card-header bg-primary text-white">
+          📦 Assigned Orders
         </div>
-
-        {/* Controls */}
-        <div className="controls">
-          <div className="tabs">
-            {["All", "Inbound", "Outbound"].map((tab) => (
-              <button
-                key={tab}
-                className={activeTab === tab ? "active" : ""}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          <input
-            type="text"
-            placeholder="Search orders..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        {/* Orders Table */}
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Product</th>
-              <th>Type</th>
-              <th>Quantity</th>
-              <th>Status</th>
-              <th>Customer</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayedOrders.length > 0 ? (
-              displayedOrders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order.orderId}</td>
-                  <td>{order.product?.productName || "N/A"}</td>
-                  <td>{order.orderType}</td>
-                  <td>{order.quantity}</td>
-                  <td>
-                    {editingId === order._id ? (
+        <div className="card-body">
+          <table className="table table-striped table-bordered">
+            <thead className="table-dark">
+              <tr>
+                <th>Order ID</th>
+                <th>Quantity</th>
+                <th>Destination</th>
+                <th>Status</th>
+                <th>Expected Delivery</th>
+                <th>Update Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.length > 0 ? (
+                orders.map((o) => (
+                  <tr key={o._id}>
+                    <td>#{o._id}</td>
+                    <td>{o.quantity}</td>
+                    <td>{o.deliveryAddress?.address || "N/A"}</td>
+                    <td>{o.status}</td>
+                    <td>
+                      {o.expectedDeliveryDate
+                        ? new Date(o.expectedDeliveryDate).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                    <td>
                       <select
-                        value={order.status}
+                        className="form-select"
+                        value={o.status}
                         onChange={(e) =>
-                          handleChange(order._id, "status", e.target.value)
+                          handleStatusChange(o._id, e.target.value)
                         }
                       >
-                        <option value="Pending">Pending</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
+                        <option>Pending</option>
+                        <option>Confirmed</option>
+                        <option>In Transit</option>
+                        <option>Out for Delivery</option>
+                        <option>Delivered</option>
+                        <option>Cancelled</option>
                       </select>
-                    ) : (
-                      order.status
-                    )}
-                  </td>
-                  <td>{order.deliveryAddress?.name || "N/A"}</td>
-                  <td>
-                    {editingId === order._id ? (
-                      <>
-                        <button
-                          className="save-btn"
-                          onClick={() => handleSave(order._id)}
-                        >
-                          Save
-                        </button>
-                        <button
-                          className="cancel-btn"
-                          onClick={handleCancel}
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className="edit-btn"
-                          onClick={() => handleEdit(order._id)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDelete(order._id)}
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    No orders assigned
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7">No Orders Found</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <ToastContainer position="top-right" autoClose={2000} />
+      {/* Notifications */}
+      <div className="card shadow mb-4">
+        <div className="card-header bg-warning text-dark">🔔 Notifications</div>
+        <div className="card-body">
+          <ul className="list-group">
+            {notifications.length > 0 ? (
+              notifications.map((note, index) => (
+                <li key={index} className="list-group-item">
+                  {note}
+                </li>
+              ))
+            ) : (
+              <li className="list-group-item">No notifications</li>
+            )}
+          </ul>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
-export default Orders;
+export default DeliveryDashboard;

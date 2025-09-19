@@ -12,7 +12,9 @@ import Consulting from "./pages/LandingPage/Consulting.jsx";
 import Support from "./pages/LandingPage/Support.jsx";
 import ApplyForm from "./pages/LandingPage/ApplyForm.jsx";
 import CreateNewShipment from "./pages/User/CreateNewShipment.jsx";
-
+import SupplyChainConsulting from "./pages/LandingPage/SupplyChainConsulting.jsx";
+import ProcessOptimization from "./pages/LandingPage/ProcessOptimization.jsx";
+import RiskManagement from "./pages/LandingPage/RiskManagement.jsx";
 import CustomerSupport from "./pages/LandingPage/CustomerSupport";
 import TechnicalAssistance from "./pages/LandingPage/TechnicalAssistance";
 import TrainingTutorials from "./pages/LandingPage/TrainingTutorials";
@@ -76,10 +78,14 @@ function App() {
         <Route path="/apply/:jobTitle" element={<ApplyForm />} />
         <Route path="/logistics" element={<Logistics />} />
         <Route path="/consulting" element={<Consulting />} />
+        <Route path="/consulting/supply-chain" element={<SupplyChainConsulting />} />
+        <Route path="/consulting/process-optimization" element={<ProcessOptimization />} />
+        <Route path="/consulting/risk-management" element={<RiskManagement />} />
         <Route path="/support" element={<Support />} />
         <Route path="/support/customer" element={<CustomerSupport />} />
         <Route path="/support/technical" element={<TechnicalAssistance />} />
         <Route path="/support/training" element={<TrainingTutorials />} />
+
 
 
         {/* Auth Route */}

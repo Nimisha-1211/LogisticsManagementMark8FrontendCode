@@ -11,21 +11,18 @@ import Logistics from "./pages/LandingPage/Logistics.jsx";
 import Consulting from "./pages/LandingPage/Consulting.jsx";
 import Support from "./pages/LandingPage/Support.jsx";
 import ApplyForm from "./pages/LandingPage/ApplyForm.jsx";
+import CreateNewShipment from "./pages/User/CreateNewShipment.jsx";
 
-// Quick Links
-import Employees from "./pages/LandingPage/Employees.jsx";
-import Tracking from "./pages/LandingPage/Tracking.jsx"
-
-
-import Warehousing from "./pages/LandingPage/Warehousing.jsx";
-import Transportation from "./pages/LandingPage/Transportation.jsx"
+import CustomerSupport from "./pages/LandingPage/CustomerSupport";
+import TechnicalAssistance from "./pages/LandingPage/TechnicalAssistance";
+import TrainingTutorials from "./pages/LandingPage/TrainingTutorials";
 
 
 // Auth Page
 import LoginPage from "./pages/auth/LoginPage.jsx";
 
 // Admin Pages
-import AdminLayout from "./pages/Admin/AdminLayout.jsx"; 
+import AdminLayout from "./pages/Admin/AdminLayout.jsx";
 import AdminDashboard from "./pages/Admin/AdminDashboard.jsx";
 import UserManagement from "./pages/Admin/UserManagement.jsx";
 import Shipments from "./pages/Admin/Shipments.jsx";
@@ -35,7 +32,7 @@ import Warehouse from "./pages/Admin/Warehouse.jsx";
 import AssignDriver from "./pages/Admin/AssignDriver.jsx";
 import Reports from "./pages/Admin/Reports.jsx";
 import AdminSettings from "./pages/Admin/AdminSettings.jsx";
-import AssignTasks from "./pages/Admin/AssignTasks"; 
+import AssignTasks from "./pages/Admin/AssignTasks";
 import AssignVehicle from "./pages/Admin/AssignVehicle.jsx";
 import AssignManager from "./pages/Admin/AssignWarehouseManager.jsx";
 import AssignRoute from "./pages/Admin/AssignRoute.jsx";
@@ -69,21 +66,24 @@ function App() {
       {/* Navbar visible on all pages */}
       <NavbarComponent />
 
-      
-        <Routes>
-          {/* Landing page */}
-          <Route path="/" element={<HomePage/>} />
-          <Route path="/aboutus" element={<AboutUsPage/>} />
-            <Route path="/team" element={<Team/>} />
-             <Route path="/careers" element={<Careers/>} />
-             <Route path="/apply/:jobTitle" element={<ApplyForm />} />
-             <Route path="/logistics" element={<Logistics/>} />
-             <Route path="/consulting" element={<Consulting/>} />
-             <Route path="/support" element={<Support/>} />
-             
 
-          {/* Auth Route */}
-          <Route path="/login" element={<LoginPage />} />
+      <Routes>
+        {/* Landing page */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/aboutus" element={<AboutUsPage />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/apply/:jobTitle" element={<ApplyForm />} />
+        <Route path="/logistics" element={<Logistics />} />
+        <Route path="/consulting" element={<Consulting />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/support/customer" element={<CustomerSupport />} />
+        <Route path="/support/technical" element={<TechnicalAssistance />} />
+        <Route path="/support/training" element={<TrainingTutorials />} />
+
+
+        {/* Auth Route */}
+        <Route path="/login" element={<LoginPage />} />
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -104,35 +104,33 @@ function App() {
 
 
         {/* Warehouse Manager Routes */}
-          <Route path="/warehouse-dashboard" element={<WarehouseDashboard />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/orders" element={<Orders />} />
-          
-          <Route path="/assign-driver" element={<AssignDriver />} />
+        <Route path="/warehouse-dashboard" element={<WarehouseDashboard />} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/orders" element={<Orders />} />
 
-          {/* Delivery Staff Routes */}
-           <Route path="/delivery" element={<DeliveryLayout />}>
+        <Route path="/assign-driver" element={<AssignDriver />} />
+
+        {/* Delivery Staff Routes */}
+        <Route path="/delivery" element={<DeliveryLayout />}>
           <Route index element={<DeliveryDashboard />} />
           <Route path="assigned" element={<AssignedShipments />} />
           <Route path="update" element={<UpdateShipmentStatus />} />
-          
+
         </Route>
 
-          {/* User Routes */}
-          <Route path="/user" element={<UserDashboard />} />
-          <Route path="/user/profile" element={<UserProfile />} />
-          <Route path="/user/address-update" element={<AddressUpdateForm />} />
-          <Route path="/myshipments" element={<MyShipments />} />
-          <Route path="/track" element={<TrackShipment />} />
-          <Route path="/history" element={<ShipmentHistory />} />
-
-           {/* quik links*/}
-          <Route path="/employees" element={<Employees />} />
-          <Route path="/tracking" element={<Tracking />} />
-          <Route path="/transportation" element={<Transportation />} />
-          <Route path="/warehousing" element={<Warehousing />} />
+        {/* User Routes */}
+        <Route path="/user" element={<UserDashboard />} />
+        <Route path="/user/profile" element={<UserProfile />} />
+        <Route path="/user/address-update" element={<AddressUpdateForm />} />
+        <Route path="/user/my-shipments" element={<MyShipments />} />
+        <Route path="/track" element={<TrackShipment />} />
+        <Route path="/user/create-shipment" element={<CreateNewShipment />} />
+        <Route path="/user/shipment-history" element={<ShipmentHistory />} />
+        <Route path="/user/track-shipment" element={<TrackShipment />} />
 
         
+
+
 
         {/* Default Route */}
         <Route path="/" element={<Navigate to="/login" />} />

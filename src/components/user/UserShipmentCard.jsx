@@ -1,7 +1,10 @@
 import React from 'react';
 import { Package, Calendar, MapPin, Truck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const UserShipmentCard = ({ shipment, onClick }) => {
+  const navigate = useNavigate();
+
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'delivered': return 'text-success bg-light';
@@ -12,10 +15,15 @@ const UserShipmentCard = ({ shipment, onClick }) => {
     }
   };
 
+  const handleTrack = (e) => {
+    e.stopPropagation(); // Prevent card onClick from firing
+    navigate(`/user/track-shipment/${shipment.id}`);
+  };
+
   return (
     <div
       className="card mb-3 shadow-sm border-1"
-      style={{ cursor: "pointer" }}
+      style={{ cursor: onClick ? "pointer" : "default" }}
       onClick={() => onClick && onClick(shipment)}
     >
       <div className="card-body">
@@ -52,6 +60,16 @@ const UserShipmentCard = ({ shipment, onClick }) => {
         <div className="border-top pt-3 d-flex justify-content-between align-items-center">
           <span className="fw-medium">Expected: {shipment.expectedDate}</span>
           <span className="fw-bold text-primary">${shipment.value}</span>
+        </div>
+
+        {/* Track Order Button */}
+        <div className="mt-3 text-end">
+          <button
+            className="btn btn-outline-primary btn-sm"
+            onClick={handleTrack}
+          >
+            🚚 Track Order
+          </button>
         </div>
       </div>
     </div>

@@ -3,64 +3,48 @@ import { useNavigate } from "react-router-dom";
 import { Package, TrendingUp, Clock, CheckCircle } from "lucide-react";
 import UserShipmentCard from "../../components/user/UserShipmentCard";
 
-// Shared dummy shipments
-const dummyShipments = [
-  {
-    _id: "1",
-    orderId: "ORD123",
-    status: "In Transit",
-    orderPlacedDate: "2025-09-01",
-    expectedDeliveryDate: "2025-09-20",
-    deliveryAddress: { address: "Hyderabad, India" },
-    assignDriver: { name: "Ravi Kumar" },
-    product: { productDetails: { description: "Laptop", price: 60000 } },
-    quantity: 1,
-  },
-  {
-    _id: "2",
-    orderId: "ORD124",
-    status: "Delivered",
-    orderPlacedDate: "2025-08-25",
-    expectedDeliveryDate: "2025-09-05",
-    deliveryAddress: { address: "Chennai, India" },
-    assignDriver: { name: "Suresh" },
-    product: { productDetails: { description: "Smartphone", price: 25000 } },
-    quantity: 2,
-  },
-  {
-    _id: "3",
-    orderId: "ORD125",
-    status: "Pending",
-    orderPlacedDate: "2025-09-10",
-    expectedDeliveryDate: "2025-09-25",
-    deliveryAddress: { address: "Bangalore, India" },
-    assignDriver: null,
-    product: { productDetails: { description: "Books", price: 1500 } },
-    quantity: 5,
-  },
-];
-
-// Shared dummy stats
-const dummyStats = [
-  { title: "Total Shipments", value: 15, change: "+5%", icon: Package, color: "primary" },
-  { title: "Active Shipments", value: 4, change: "+2%", icon: Clock, color: "warning" },
-  { title: "Delivered", value: 10, change: "+8%", icon: CheckCircle, color: "success" },
-  { title: "Total Value", value: "₹1,50,000", change: "+12%", icon: TrendingUp, color: "info" },
-];
-
 const UserDashboard = () => {
   const [stats, setStats] = useState([]);
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch all orders and derive stats
   useEffect(() => {
-    setStats(dummyStats);
-    setOrders(dummyShipments);
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/orders/order");
+        if (!res.ok) throw new Error("Failed to fetch orders");
+        const data = await res.json();
+        setOrders(data);
+
+        // Compute stats dynamically
+        const totalOrders = data.length;
+        const activeOrders = data.filter((o) => o.status === "In Transit" || o.status === "Pending").length;
+        const deliveredOrders = data.filter((o) => o.status === "Delivered").length;
+        const totalValue = data.reduce((sum, o) => {
+          const price = o.product?.productDetails?.price || 0;
+          return sum + price * (o.quantity || 1);
+        }, 0);
+
+        const mappedStats = [
+          { title: "Total Shipments", value: totalOrders, change: "+5%", icon: Package, color: "primary" },
+          { title: "Active Shipments", value: activeOrders, change: "+2%", icon: Clock, color: "warning" },
+          { title: "Delivered", value: deliveredOrders, change: "+8%", icon: CheckCircle, color: "success" },
+          { title: "Total Value", value: `₹${totalValue}`, change: "+12%", icon: TrendingUp, color: "info" },
+        ];
+
+        setStats(mappedStats);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
+    };
+
+    fetchOrders();
   }, []);
 
   return (
     <div className="container py-4">
-      {/* Header */}
+      {/* Dashboard Header */}
       <div className="mb-4">
         <h1 className="h3 fw-bold text-dark">Dashboard</h1>
         <p className="text-muted">Welcome back! Here's what's happening with your shipments.</p>
@@ -89,55 +73,77 @@ const UserDashboard = () => {
         })}
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Shipments */}
       <div className="row g-4">
-        {/* Recent Shipments */}
-        <div className="col-12 col-lg-6">
+        <div className="col-12 col-lg-8">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="h5 fw-semibold">Recent Shipments</h2>
             <a href="/user/my-shipments" className="text-primary text-decoration-none small fw-semibold">
               View All
             </a>
           </div>
+
           <div className="d-flex flex-column">
-            {orders.slice(0, 3).map((shipment) => {
-              const productDetails = shipment.product?.productDetails || {};
-              return (
-                <div key={shipment._id} className="mb-3">
-                  <UserShipmentCard
-                    shipment={{
-                      id: shipment.orderId,
-                      description: productDetails.description || "No product details",
-                      status: shipment.status,
-                      shippedDate: new Date(shipment.orderPlacedDate).toDateString(),
-                      expectedDate: new Date(shipment.expectedDeliveryDate).toDateString(),
-                      destination: shipment.deliveryAddress.address,
-                      carrier: shipment.assignDriver?.name || "Not Assigned",
-                      value: productDetails.price ? productDetails.price * shipment.quantity : "N/A",
-                    }}
-                  />
-                </div>
-              );
-            })}
+            {orders.length === 0 ? (
+              <p className="text-muted">No shipments available.</p>
+            ) : (
+              orders.slice(0, 3).map((shipment) => {
+                const product = shipment.product || {};
+                const productDetails = product.productDetails || {};
+
+                return (
+                  <div key={shipment._id || shipment.orderId} className="mb-3">
+                    <UserShipmentCard
+                      shipment={{
+                        id: shipment.orderId,
+                        description: productDetails.description || product.productName || "No product details",
+                        status: shipment.status,
+                        shippedDate: shipment.orderPlacedDate
+                          ? new Date(shipment.orderPlacedDate).toDateString()
+                          : "N/A",
+                        expectedDate: shipment.expectedDeliveryDate
+                          ? new Date(shipment.expectedDeliveryDate).toDateString()
+                          : "N/A",
+                        destination: shipment.deliveryAddress?.address || "N/A",
+                        carrier: shipment.assignDriver || "Not Assigned",
+                        value: productDetails.price ? productDetails.price * shipment.quantity : "N/A",
+                      }}
+                    />
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="col-12 col-lg-6">
-          <h2 className="h5 fw-semibold mb-3">Quick Actions</h2>
-          <div className="d-flex flex-column">
-            <button className="btn btn-primary text-start mb-3 p-3" onClick={() => navigate("/user/track-shipment")}>
-              <h6 className="fw-semibold mb-1">Track a Shipment</h6>
-              <small className="text-light">Enter tracking number to get real-time updates</small>
-            </button>
-            <button className="btn btn-success text-start mb-3 p-3" onClick={() => navigate("/user/create-shipment")}>
-              <h6 className="fw-semibold mb-1">Create New Shipment</h6>
-              <small className="text-light">Start a new shipping request</small>
-            </button>
-            <button className="btn btn-secondary text-start mb-3 p-3" onClick={() => navigate("/user/shipment-history")}>
-              <h6 className="fw-semibold mb-1">Shipment History</h6>
-              <small className="text-light">View all completed shipments</small>
-            </button>
+        <div className="col-12 col-lg-4">
+          <h2 className="h6 fw-semibold mb-3">Quick Actions</h2>
+          <div className="d-flex flex-column gap-3">
+            <div
+              className="p-3 rounded text-white"
+              style={{ backgroundColor: "#0d6efd", cursor: "pointer" }}
+              onClick={() => navigate("/user/track-shipment")}
+            >
+              <h6 className="mb-1 fw-bold">Track a Shipment</h6>
+              <small>Enter tracking number to get real-time updates</small>
+            </div>
+            <div
+              className="p-3 rounded text-white"
+              style={{ backgroundColor: "#198754", cursor: "pointer" }}
+              onClick={() => navigate("/user/create-shipment")}
+            >
+              <h6 className="mb-1 fw-bold">Create New Shipment</h6>
+              <small>Start a new shipping request</small>
+            </div>
+            <div
+              className="p-3 rounded text-white"
+              style={{ backgroundColor: "#6c757d", cursor: "pointer" }}
+              onClick={() => navigate("/user/shipment-history")}
+            >
+              <h6 className="mb-1 fw-bold">Shipment History</h6>
+              <small>View all completed shipments</small>
+            </div>
           </div>
         </div>
       </div>
@@ -145,5 +151,4 @@ const UserDashboard = () => {
   );
 };
 
-export { dummyShipments }; // 🔥 export for reuse
 export default UserDashboard;

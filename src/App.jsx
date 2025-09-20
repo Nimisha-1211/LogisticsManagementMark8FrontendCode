@@ -129,10 +129,10 @@ function App() {
         <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/user/address-update" element={<AddressUpdateForm />} />
         <Route path="/user/my-shipments" element={<MyShipments />} />
-        <Route path="/track" element={<TrackShipment />} />
         <Route path="/user/create-shipment" element={<CreateNewShipment />} />
         <Route path="/user/shipment-history" element={<ShipmentHistory />} />
         <Route path="/user/track-shipment" element={<TrackShipment />} />
+        <Route path="/user/track-shipment/:id" element={<TrackShipment />} />
 
         
 
